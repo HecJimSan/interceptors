@@ -1,0 +1,22 @@
+<div>
+  <textarea   
+    name="description" id="description"  class="customTextarea" cols="30" rows="10"
+    placeholder="Describe your customer..."
+    (keyup)="onKey($event)"
+    data-qa="description"></textarea>
+    
+  <div class="center">
+    <button (click)="call()"  data-qa="addCustomer">Let´s do it!</button>
+  </div>
+
+  <div class="center">
+    <h2>
+      <b>Response</b>
+    </h2>
+    <h3>{{ customer.name }}, {{ customer.description }} </h3>
+  </div> 
+</div>
+
+
+
+

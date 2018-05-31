@@ -1,0 +1,48 @@
+{
+    "customer": [
+        {
+            "id": "4",
+            "auth": false,
+            "status": 500,
+            "description": "Internal server error without auth",
+
+            "name": "Beatriz"
+        },
+        {
+            "id": "5",
+            "auth": false,
+            "status": 503,
+            "description": "Service unavailable",
+
+            "name": "Beatriz"
+        },
+        {
+            "id": "6",
+            "auth": true,
+            "description": "right response with auth",
+
+            "name": "Maria"
+        },
+        {
+            "id": "7",
+            "auth": true,
+            "description": "right response with auth",
+
+            "name": "hola"
+        },
+        {
+            "id": "8",
+            "auth": true,
+            "description": "right response with auth",
+
+            "name": "Federico"
+        },
+        {
+            "id": "9",
+            "auth": false,
+            "description": "right response without auth",
+            
+            "name": "Federico"
+        }
+    ]
+}
