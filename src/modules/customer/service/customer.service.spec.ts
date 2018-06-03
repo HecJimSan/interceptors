@@ -1,6 +1,6 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed, async } from '@angular/core/testing';
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse, HttpRequest } from '@angular/common/http';
 
 import { CustomerService } from './../service/customer.service';
 import { Customer } from './../model/customer.model';
@@ -16,7 +16,7 @@ describe('CustomerService', () => {
                 HttpClientTestingModule
             ],
             providers: [
-                CustomerService,
+                CustomerService
             ],
         });
     }));
@@ -27,39 +27,42 @@ describe('CustomerService', () => {
     });
 
     it('should return a valid customer when the response has been successful', () => {
-        const person: Customer = {
+        const customer: Customer = {
             name: 'pepe',
             description: 'My name is pepe',
         };
 
-        customerService.getCustomer('any').subscribe(data =>
-            expect(data).toBe(person), fail
+        customerService.getCustomer('customerId').subscribe(data =>
+            expect(data).toBe(customer), fail
         );
 
-        const req = httpTestingController.expectOne('http://localhost:3005/customer/any');
-        req.flush(person);
+        httpTestingController.expectOne((httpRequest: HttpRequest<{}>) => {
+            expect(httpRequest.url).toBe('http://localhost:3005/customer/customerId');
+            expect(httpRequest.method).toBe('GET');
+            expect(httpRequest.body).toBeFalsy();
+            return true;
+        }).flush(customer);
     });
 
-    it('should handle the error', () => {
-
-        const person: Customer = {
-            name: 'pepe',
-            description: 'My name is pepe',
-        };
-
-        customerService.getCustomer('any').subscribe(
-            (data: Customer) => fail,
-            (error: HttpErrorResponse) => {
+    it('should handle an error when the response is invalid', () => {
+        customerService.getCustomer('customerId').subscribe(
+            fail
+            , (error: HttpErrorResponse) => {
                 expect(error.status).toBe(400);
                 expect(error.statusText).toBe('the format is wrong');
             }
         );
 
-        const req = httpTestingController.expectOne('http://localhost:3005/customer/any');
-        req.error(new ErrorEvent('bad request'), { status: 400, statusText: 'the format is wrong' });
+        httpTestingController.expectOne((httpRequest: HttpRequest<{}>) => {
+            expect(httpRequest.url).toBe('http://localhost:3005/customer/customerId');
+            expect(httpRequest.method).toBe('GET');
+            expect(httpRequest.body).toBeFalsy();
+            return true;
+        }).error(new ErrorEvent('Not found'), { status: 400, statusText: 'the format is wrong' });
     });
 
     afterEach(() => {
         httpTestingController.verify();
     });
+
 });

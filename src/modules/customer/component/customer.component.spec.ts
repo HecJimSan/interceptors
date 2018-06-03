@@ -15,8 +15,11 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { CustomerService } from './../service/customer.service';
 import { Customer } from './../model/customer.model';
 import { CustomerComponent } from './customer.component';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 
 describe('CustomerComponent', () => {
+
   let component: CustomerComponent;
   let fixture: ComponentFixture<CustomerComponent>;
   let nativeElement: any;
@@ -27,12 +30,12 @@ describe('CustomerComponent', () => {
         CustomerComponent
       ],
       imports: [
-        HttpClientTestingModule,
+        HttpClientTestingModule
       ],
       providers: [
         CustomerService
-      ],
-    }).compileComponents();
+      ]
+    });
   }));
 
   beforeEach(() => {
@@ -42,10 +45,6 @@ describe('CustomerComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('should contain customer blocks', () => {
     expect(nativeElement.querySelector(byDataQa('description'))).toBeTruthy();
     expect(nativeElement.querySelector('.customTextarea')).toBeTruthy();
@@ -53,7 +52,7 @@ describe('CustomerComponent', () => {
     expect(nativeElement.querySelector('.center')).toBeTruthy();
   });
 
-  it('should save in the component the value coming from the textarea', () => {
+  it('should update the value when there is a key event on the textarea', () => {
     const textArea = nativeElement.querySelector(byDataQa('description'));
     textArea.value = 'any value';
 
@@ -63,37 +62,39 @@ describe('CustomerComponent', () => {
     expect(component.descriptionCustomer).toBe('any value');
   });
 
-  it('should use customerService', fakeAsync(() => {
-    expect(component.customerService).toBeTruthy();
-    const person = {
-      name: 'pepe',
-      description: 'My name is pepe',
+  describe('should use customerService and handle ', () => {
+
+    it('a valid reposne', fakeAsync(() => {
+      const person = {
+        name: 'pepe',
+        description: 'My name is pepe',
+      };
+      spyOn(component.customerService, 'getCustomer').and.returnValue(Observable.of(person));
+
+      addCustomer();
+
+      expect(component.customer.name).toBe('pepe');
+      expect(component.customer.description).toBe('My name is pepe');
+    }));
+
+    it('an invalid reponse', fakeAsync(() => {
+      const res = { status: 400, statusText: 'the format is wrong' };
+      const errorObservable: ErrorObservable = ErrorObservable.create(new HttpErrorResponse(res));
+      spyOn(component.customerService, 'getCustomer').and.returnValue(errorObservable);
+
+      addCustomer();
+
+      expect(component.customer.name).toBe('Error: 400');
+      expect(component.customer.description).toBe('Error: 400');
+    }));
+
+    const addCustomer = () => {
+      nativeElement.querySelector(byDataQa('addCustomer')).click();
+      tick();
+      fixture.detectChanges();
     };
-    spyOn(component.customerService, 'getCustomer').and.returnValue(Observable.of(person));
 
-    nativeElement.querySelector(byDataQa('addCustomer')).click();
-    tick();
-    fixture.detectChanges();
-
-    expect(component.customer.name).toBe('pepe');
-    expect(component.customer.description).toBe('My name is pepe');
-  }));
-
-  it('should handle error response', fakeAsync(() => {
-    expect(component.customerService).toBeTruthy();
-    const person = {
-      name: 'pepe',
-      description: 'My name is pepe',
-    };
-    spyOn(component.customerService, 'getCustomer').and.returnValue(Observable.of(person));
-
-    nativeElement.querySelector(byDataQa('addCustomer')).click();
-    tick();
-    fixture.detectChanges();
-
-    expect(component.customer.name).toBe('pepe');
-    expect(component.customer.description).toBe('My name is pepe');
-  }));
+  });
 
   const byDataQa = (dataQa) => {
     return '[data-qa="' + dataQa + '"]';

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 import { CustomerService } from './../service/customer.service';
 import { Customer } from './../model/customer.model';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-customer',
@@ -27,6 +28,11 @@ export class CustomerComponent implements OnInit {
   async call() {
     this.customerService.getCustomer(this.descriptionCustomer).subscribe((response: Customer) => {
       this.customer = response;
+    }, (error: HttpErrorResponse) => {
+      const erroCustomer: Customer = new Customer();
+      erroCustomer.name = 'Error: ' + error.status;
+      erroCustomer.description = 'Error: ' + error.status;
+      this.customer = erroCustomer;
     });
   }
 }
