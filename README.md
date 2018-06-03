@@ -1,6 +1,6 @@
 DESCRIPTION (WIP)
 ===========
-This is an example to test with angular 6 the interceptors
+This is an example to test with angular 5 the interceptors
 
 COMMANDS
 =========
