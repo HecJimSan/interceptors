@@ -29,6 +29,7 @@
     "hoek": "^5.0.3",
     "intl": "^1.2.5",
     "minimatch": "^3.0.2",
+    "node-growl": "^0.1.1",
     "phantom": "^4.0.12",
     "randomatic": "^3.0.0",
     "rxjs": "^5.5.11",
